@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: kplpay-postgres
+    environment:
+      POSTGRES_DB: kplpay
+      POSTGRES_USER: kplpay
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kplpay_local}
+    ports:
+      - "5432:5432"
+    volumes:
+      - kplpay_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kplpay -d kplpay"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  kplpay_pgdata:
