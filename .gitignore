@@ -14,3 +14,6 @@ target/
 
 ### VS Code ###
 .vscode/
+
+### AI ###
+.claude
