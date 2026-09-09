@@ -12,8 +12,8 @@ that is interview-defensible — every decision should be explainable, not just 
 
 ## Tech Stack
 
-- Language/runtime: Java 21
-- Framework: Spring Boot 3.2+
+- Language/runtime: Java 25
+- Framework: Spring Boot 4.1.1
 - Build: Maven, via `./mvnw` wrapper only — never rely on a system-installed `mvn`
 - Database: PostgreSQL 17 (alpine image), schema owned exclusively by Flyway
 - Testing: JUnit 5 + Mockito (unit), Testcontainers (integration, real Postgres),
