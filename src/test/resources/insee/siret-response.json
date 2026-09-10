@@ -1,0 +1,23 @@
+{
+  "header": {
+    "statut": 200,
+    "message": "OK"
+  },
+  "etablissement": {
+    "siren": "552100554",
+    "nic": "00122",
+    "siret": "55210055400122",
+    "uniteLegale": {
+      "denominationUniteLegale": "AIR FRANCE",
+      "nomUniteLegale": null,
+      "prenom1UniteLegale": null
+    },
+    "adresseEtablissement": {
+      "numeroVoieEtablissement": "45",
+      "typeVoieEtablissement": "RUE",
+      "libelleVoieEtablissement": "DE PARIS",
+      "codePostalEtablissement": "95747",
+      "libelleCommuneEtablissement": "ROISSY-EN-FRANCE"
+    }
+  }
+}

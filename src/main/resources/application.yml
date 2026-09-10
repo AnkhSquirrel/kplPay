@@ -5,6 +5,10 @@ spring:
 server:
   port: 8080
 
+insee:
+  base-url: https://api.insee.fr/api-sirene/3.11
+  api-key: ${INSEE_API_KEY}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -47,6 +51,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+# Test-only stand-ins. Integration tests that exercise the INSEE client override
+# insee.base-url via @DynamicPropertySource to point at WireMock.
+insee:
+  base-url: http://localhost:0
+  api-key: test
 
 ---
 spring:
