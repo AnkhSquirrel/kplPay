@@ -1,5 +1,6 @@
 package com.ankhsquirrel.kplpay.common;
 
+import com.ankhsquirrel.kplpay.customer.CustomerNotFoundException;
 import com.ankhsquirrel.kplpay.customer.DuplicateSiretException;
 import com.ankhsquirrel.kplpay.integration.insee.InseeUnavailableException;
 import com.ankhsquirrel.kplpay.integration.insee.SiretNotFoundException;
@@ -32,6 +33,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "MALFORMED_REQUEST", "Request body is missing or malformed");
     }
 
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ApiError> handleCustomerNotFound(CustomerNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, "CUSTOMER_NOT_FOUND", ex.getMessage());
+    }
+
     @ExceptionHandler(DuplicateSiretException.class)
     public ResponseEntity<ApiError> handleDuplicateSiret(DuplicateSiretException ex) {
         return build(HttpStatus.CONFLICT, "DUPLICATE_SIRET", ex.getMessage());
@@ -39,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SiretNotFoundException.class)
     public ResponseEntity<ApiError> handleSiretNotFound(SiretNotFoundException ex) {
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, "SIRET_NOT_FOUND", ex.getMessage());
+        return build(HttpStatus.UNPROCESSABLE_CONTENT, "SIRET_NOT_FOUND", ex.getMessage());
     }
 
     @ExceptionHandler(InseeUnavailableException.class)
