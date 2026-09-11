@@ -1,6 +1,7 @@
 package com.ankhsquirrel.kplpay.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,10 +17,20 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApiError(
+
+        @Schema(description = "When the error was produced")
         Instant timestamp,
+
+        @Schema(description = "HTTP status code")
         int status,
+
+        @Schema(description = "Stable, machine-readable error code (e.g. VALIDATION_ERROR, CUSTOMER_NOT_FOUND)")
         String code,
+
+        @Schema(description = "Human-readable summary of the error")
         String message,
+
+        @Schema(description = "Per-field validation details, present only for VALIDATION_ERROR")
         List<FieldError> errors) {
 
     public static ApiError of(int status, String code, String message) {
@@ -30,6 +41,12 @@ public record ApiError(
         return new ApiError(Instant.now(), status, code, message, errors);
     }
 
-    public record FieldError(String field, String message) {
+    public record FieldError(
+
+            @Schema(description = "Name of the invalid request field", example = "fieldName")
+            String field,
+
+            @Schema(description = "Why the field failed validation", example = "validation failure reason")
+            String message) {
     }
 }

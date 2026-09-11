@@ -1,5 +1,7 @@
 package com.ankhsquirrel.kplpay.invoice;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,16 +13,35 @@ import java.util.UUID;
  * independent existence or API identity outside its invoice.
  */
 public record InvoiceResponse(
+
+        @Schema(description = "Invoice identifier")
         UUID id,
+
+        @Schema(description = "Identifier of the billed customer")
         UUID customerId,
+
+        @Schema(description = "Identifier of the subscription this invoice was generated from")
         UUID subscriptionId,
+
+        @Schema(description = "Date the invoice was issued")
         LocalDate issueDate,
+
+        @Schema(description = "Payment due date")
         LocalDate dueDate,
+
         InvoiceStatus status,
+
+        @Schema(description = "Total before VAT", example = "49.90")
         BigDecimal subtotal,
+
+        @Schema(description = "VAT amount", example = "9.98")
         BigDecimal taxAmount,
+
+        @Schema(description = "Total including VAT", example = "59.88")
         BigDecimal totalAmount,
+
         List<LineItemResponse> lineItems,
+
         LocalDateTime createdAt) {
 
     public static InvoiceResponse from(Invoice invoice) {
@@ -39,10 +60,19 @@ public record InvoiceResponse(
     }
 
     public record LineItemResponse(
+
+            @Schema(description = "Line item identifier")
             UUID id,
+
+            @Schema(description = "What this line represents", example = "Growth — monthly subscription")
             String description,
+
             Integer quantity,
+
+            @Schema(description = "Price per unit, excluding VAT", example = "49.90")
             BigDecimal unitPrice,
+
+            @Schema(description = "quantity * unitPrice", example = "49.90")
             BigDecimal amount) {
 
         public static LineItemResponse from(LineItem lineItem) {

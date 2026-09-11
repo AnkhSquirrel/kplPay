@@ -1,5 +1,6 @@
 package com.ankhsquirrel.kplpay.subscription;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -18,19 +19,24 @@ import java.util.UUID;
  */
 public record CreateSubscriptionRequest(
 
+        @Schema(description = "Identifier of an existing customer")
         @NotNull
         UUID customerId,
 
+        @Schema(description = "Name of the subscription plan", example = "Growth")
         @NotBlank
         @Size(max = 100)
         String planName,
 
+        @Schema(description = "Recurring monthly amount, excluding VAT", example = "49.90")
         @NotNull
         @Positive
         @Digits(integer = 8, fraction = 2, message = "monthlyAmount must fit NUMERIC(10,2)")
         BigDecimal monthlyAmount,
 
-        // 1-28, not 1-31: see the note in Subscription#billingCycleDay.
+        @Schema(description = "Day of the month invoices are generated on. 1-28 only, not "
+                + "1-31, so every billing cycle is valid in every month including February.",
+                example = "15", minimum = "1", maximum = "28")
         @NotNull
         @Min(1)
         @Max(28)

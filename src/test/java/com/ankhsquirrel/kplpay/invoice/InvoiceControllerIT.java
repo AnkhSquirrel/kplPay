@@ -111,4 +111,13 @@ class InvoiceControllerIT extends AbstractIntegrationTest {
 
         assertThat(invoiceRepository.count()).isZero();
     }
+
+    @Test
+    void returns_400_when_subscription_id_is_not_a_uuid() throws Exception {
+        mockMvc.perform(post("/api/invoices/generate/{subscriptionId}", "not-a-uuid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("TYPE_MISMATCH"));
+
+        assertThat(invoiceRepository.count()).isZero();
+    }
 }
