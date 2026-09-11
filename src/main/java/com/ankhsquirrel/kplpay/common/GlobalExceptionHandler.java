@@ -4,6 +4,8 @@ import com.ankhsquirrel.kplpay.customer.CustomerNotFoundException;
 import com.ankhsquirrel.kplpay.customer.DuplicateSiretException;
 import com.ankhsquirrel.kplpay.integration.insee.InseeUnavailableException;
 import com.ankhsquirrel.kplpay.integration.insee.SiretNotFoundException;
+import com.ankhsquirrel.kplpay.subscription.SubscriptionCancelledException;
+import com.ankhsquirrel.kplpay.subscription.SubscriptionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -52,6 +54,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleInseeUnavailable(InseeUnavailableException ex) {
         return build(HttpStatus.SERVICE_UNAVAILABLE, "INSEE_UNAVAILABLE",
                 "Could not reach the INSEE Sirene registry, please retry later");
+    }
+
+    @ExceptionHandler(SubscriptionNotFoundException.class)
+    public ResponseEntity<ApiError> handleSubscriptionNotFound(SubscriptionNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, "SUBSCRIPTION_NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(SubscriptionCancelledException.class)
+    public ResponseEntity<ApiError> handleSubscriptionCancelled(SubscriptionCancelledException ex) {
+        return build(HttpStatus.CONFLICT, "SUBSCRIPTION_CANCELLED", ex.getMessage());
     }
 
     private static ResponseEntity<ApiError> build(HttpStatus status, String code, String message) {
