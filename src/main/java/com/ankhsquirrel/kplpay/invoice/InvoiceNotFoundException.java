@@ -2,6 +2,7 @@ package com.ankhsquirrel.kplpay.invoice;
 
 import lombok.Getter;
 
+import java.io.Serial;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,9 @@ import java.util.UUID;
  */
 @Getter
 public class InvoiceNotFoundException extends RuntimeException {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final UUID invoiceId;
 

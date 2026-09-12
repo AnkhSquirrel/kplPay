@@ -56,7 +56,7 @@ public class InseeClient {
         }
         return new CompanyInfo(
                 legalName,
-                joinNonBlank(adresse.numeroVoieEtablissement(),
+                joinNonBlankOrNull(adresse.numeroVoieEtablissement(),
                         adresse.typeVoieEtablissement(),
                         adresse.libelleVoieEtablissement()),
                 StringUtils.trimToNull(adresse.codePostalEtablissement()),
@@ -72,11 +72,10 @@ public class InseeClient {
             return denomination;
         }
         // Sole trader: the unité légale carries no company name, only the owner's identity.
-        return joinNonBlank(uniteLegale.prenom1UniteLegale(), uniteLegale.nomUniteLegale());
+        return joinNonBlankOrNull(uniteLegale.prenom1UniteLegale(), uniteLegale.nomUniteLegale());
     }
 
-    /** Trimmed parts that carry text, glued with single spaces; {@code null} if none do. */
-    private static String joinNonBlank(String... parts) {
+    private static String joinNonBlankOrNull(String... parts) {
         return Stream.of(parts)
                 .map(StringUtils::trimToNull)
                 .filter(Objects::nonNull)

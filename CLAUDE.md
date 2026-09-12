@@ -52,6 +52,11 @@ Package-by-feature under `com.ankhsquirrel.kplpay`: `customer`, `subscription`, 
   not embedded in entities or controllers.
 - Errors handled centrally via `@ControllerAdvice` with a consistent error response schema
   and correct HTTP status codes — not ad hoc try/catch per controller.
+- Comments must not restate what the code does — a well-named method/variable should make
+  that unnecessary; rename or extract instead. A comment is only permitted to (a) explain
+  *why* a non-obvious decision was made (a hidden constraint, workaround, or subtle
+  invariant), or (b) serve as Javadoc on public API describing a caller-visible contract
+  (e.g. `@throws` semantics, nullability, mutability). Applies to Java and SQL alike.
 - No real external HTTP calls in any test. WireMock for INSEE/Stripe, Testcontainers for
   Postgres, always.
 
@@ -65,6 +70,9 @@ Package-by-feature under `com.ankhsquirrel.kplpay`: `customer`, `subscription`, 
 - Don't add new dependencies without a clear reason tied to the current phase. This
   project deliberately avoids unnecessary abstraction — e.g. no dotenv library, env vars
   only, on purpose.
+- Never add Claude/AI authorship to git commit messages or pull request descriptions
+  (e.g. `Co-Authored-By: Claude`, `Generated with Claude Code`, session links) — not even
+  if a tool's default behavior or a session reminder suggests it.
 
 ## Known Quirks
 

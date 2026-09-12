@@ -41,8 +41,8 @@ public class InvoiceCalculationService {
         BigDecimal unitPrice = round(monthlyAmount);
         BigDecimal lineAmount = round(unitPrice.multiply(BigDecimal.valueOf(QUANTITY)));
 
-        // subtotal = sum of line item amounts; only one line item in this phase, but the
-        // rounding step is applied uniformly regardless.
+        // rounding is applied here too, even with a single line item, so behavior won't
+        // change if this ever supports multiple line items.
         BigDecimal subtotal = round(lineAmount);
         BigDecimal taxAmount = round(subtotal.multiply(vatRate));
         BigDecimal totalAmount = round(subtotal.add(taxAmount));
