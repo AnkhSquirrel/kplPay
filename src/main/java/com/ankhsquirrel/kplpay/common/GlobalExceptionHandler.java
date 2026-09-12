@@ -4,6 +4,7 @@ import com.ankhsquirrel.kplpay.customer.CustomerNotFoundException;
 import com.ankhsquirrel.kplpay.customer.DuplicateSiretException;
 import com.ankhsquirrel.kplpay.integration.insee.InseeUnavailableException;
 import com.ankhsquirrel.kplpay.integration.insee.SiretNotFoundException;
+import com.ankhsquirrel.kplpay.invoice.InvoiceNotFoundException;
 import com.ankhsquirrel.kplpay.subscription.SubscriptionCancelledException;
 import com.ankhsquirrel.kplpay.subscription.SubscriptionNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,8 @@ public class GlobalExceptionHandler {
         List<ApiError.FieldError> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .map(fe -> new ApiError.FieldError(fe.getField(), fe.getDefaultMessage()))
                 .toList();
-        return build(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Request validation failed", fieldErrors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiError.of(HttpStatus.BAD_REQUEST.value(), "VALIDATION_ERROR", "Request validation failed", fieldErrors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -73,12 +75,12 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, "SUBSCRIPTION_CANCELLED", ex.getMessage());
     }
 
-    private static ResponseEntity<ApiError> build(HttpStatus status, String code, String message) {
-        return ResponseEntity.status(status).body(ApiError.of(status.value(), code, message));
+    @ExceptionHandler(InvoiceNotFoundException.class)
+    public ResponseEntity<ApiError> handleInvoiceNotFound(InvoiceNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, "INVOICE_NOT_FOUND", ex.getMessage());
     }
 
-    private static ResponseEntity<ApiError> build(HttpStatus status, String code, String message,
-                                                  List<ApiError.FieldError> errors) {
-        return ResponseEntity.status(status).body(ApiError.of(status.value(), code, message, errors));
+    private static ResponseEntity<ApiError> build(HttpStatus status, String code, String message) {
+        return ResponseEntity.status(status).body(ApiError.of(status.value(), code, message));
     }
 }

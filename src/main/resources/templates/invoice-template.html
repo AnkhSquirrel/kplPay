@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #222;
+        }
+        .header {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a3c6e;
+            margin-bottom: 24px;
+        }
+        .meta-table, .customer-table, .items-table, .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .meta-table td {
+            padding: 2px 0;
+        }
+        .customer-table td {
+            padding: 2px 0;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ccc;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        .items-table th {
+            background-color: #f0f2f5;
+        }
+        .items-table .numeric, .totals-table .numeric {
+            text-align: right;
+        }
+        .totals-table td {
+            padding: 4px 8px;
+        }
+        .totals-table .label {
+            text-align: right;
+            color: #555;
+        }
+        .totals-table .total-row td {
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 1px solid #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">kplPay</div>
+
+<table class="meta-table">
+    <tr>
+        <td><strong>Invoice</strong> <span th:text="${invoice.id}">00000000-0000-0000-0000-000000000000</span></td>
+        <td class="numeric">Issue date: <span th:text="${#temporals.format(invoice.issueDate, 'dd/MM/yyyy')}">01/01/2026</span></td>
+    </tr>
+    <tr>
+        <td>Status: <span th:text="${invoice.status}">DRAFT</span></td>
+        <td class="numeric">Due date: <span th:text="${#temporals.format(invoice.dueDate, 'dd/MM/yyyy')}">31/01/2026</span></td>
+    </tr>
+</table>
+
+<div class="section-title">Bill to</div>
+<table class="customer-table">
+    <tr><td th:text="${customer.companyName}">ACME SA</td></tr>
+    <tr><td th:text="'SIRET: ' + ${customer.siret}">SIRET: 00000000000000</td></tr>
+    <tr th:if="${customer.addressLine != null}"><td th:text="${customer.addressLine}">1 rue Exemple</td></tr>
+    <tr th:if="${customer.postalCode != null or customer.city != null}">
+        <td th:text="${customer.postalCode} + ' ' + ${customer.city}">75000 Paris</td>
+    </tr>
+    <tr><td th:text="${customer.email}">billing@acme.example</td></tr>
+</table>
+
+<table class="items-table">
+    <thead>
+    <tr>
+        <th>Description</th>
+        <th class="numeric">Quantity</th>
+        <th class="numeric">Unit price</th>
+        <th class="numeric">Amount</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${invoice.lineItems}">
+        <td th:text="${item.description}">Plan — monthly subscription</td>
+        <td class="numeric" th:text="${item.quantity}">1</td>
+        <td class="numeric" th:text="${item.unitPrice} + ' &euro;'">0.00 &euro;</td>
+        <td class="numeric" th:text="${item.amount} + ' &euro;'">0.00 &euro;</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="totals-table">
+    <tr>
+        <td class="label">Subtotal</td>
+        <td class="numeric" th:text="${invoice.subtotal} + ' &euro;'">0.00 &euro;</td>
+    </tr>
+    <tr>
+        <td class="label">VAT</td>
+        <td class="numeric" th:text="${invoice.taxAmount} + ' &euro;'">0.00 &euro;</td>
+    </tr>
+    <tr class="total-row">
+        <td class="label">Total</td>
+        <td class="numeric" th:text="${invoice.totalAmount} + ' &euro;'">0.00 &euro;</td>
+    </tr>
+</table>
+
+</body>
+</html>

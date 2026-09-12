@@ -10,14 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -119,5 +123,34 @@ class InvoiceControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.code").value("TYPE_MISMATCH"));
 
         assertThat(invoiceRepository.count()).isZero();
+    }
+
+    @Test
+    void returns_a_readable_pdf_for_an_existing_invoice() throws Exception {
+        UUID customerId = anExistingCustomer();
+        UUID subscriptionId = anExistingSubscription(customerId);
+
+        mockMvc.perform(post("/api/invoices/generate/{subscriptionId}", subscriptionId))
+                .andExpect(status().isCreated());
+
+        UUID invoiceId = invoiceRepository.findAll().getFirst().getId();
+
+        MvcResult result = mockMvc.perform(get("/api/invoices/{id}/pdf", invoiceId))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("Content-Disposition",
+                        containsString("invoice-" + invoiceId + ".pdf")))
+                .andReturn();
+
+        byte[] body = result.getResponse().getContentAsByteArray();
+        assertThat(body).isNotEmpty();
+        assertThat(new String(body, 0, 4, StandardCharsets.US_ASCII)).isEqualTo("%PDF");
+    }
+
+    @Test
+    void returns_404_when_invoice_does_not_exist_for_pdf() throws Exception {
+        mockMvc.perform(get("/api/invoices/{id}/pdf", UUID.randomUUID()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("INVOICE_NOT_FOUND"));
     }
 }

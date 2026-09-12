@@ -18,13 +18,16 @@ public class InvoiceService {
     private final InvoiceRepository repository;
     private final SubscriptionRepository subscriptionRepository;
     private final InvoiceCalculationService calculationService;
+    private final InvoicePdfService pdfService;
     private final Clock clock;
 
     public InvoiceService(InvoiceRepository repository, SubscriptionRepository subscriptionRepository,
-                           InvoiceCalculationService calculationService, Clock clock) {
+                           InvoiceCalculationService calculationService, InvoicePdfService pdfService,
+                           Clock clock) {
         this.repository = repository;
         this.subscriptionRepository = subscriptionRepository;
         this.calculationService = calculationService;
+        this.pdfService = pdfService;
         this.clock = clock;
     }
 
@@ -56,5 +59,15 @@ public class InvoiceService {
         // @CreationTimestamp is populated on the instance we map into the response.
         Invoice saved = repository.saveAndFlush(invoice);
         return InvoiceResponse.from(saved);
+    }
+
+    // Transactional (not just a repository lookup) because InvoicePdfService.generate() walks the
+    // lazily-fetched lineItems association while rendering the template; the session must still
+    // be open at that point.
+    @Transactional(readOnly = true)
+    public byte[] generatePdf(UUID id) {
+        Invoice invoice = repository.findById(id)
+                .orElseThrow(() -> new InvoiceNotFoundException(id));
+        return pdfService.generate(invoice);
     }
 }
