@@ -2,6 +2,7 @@ package com.ankhsquirrel.kplpay.customer;
 
 import lombok.Getter;
 
+import java.io.Serial;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,9 @@ import java.util.UUID;
  */
 @Getter
 public class CustomerNotFoundException extends RuntimeException {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final UUID customerId;
 
